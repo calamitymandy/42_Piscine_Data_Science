@@ -61,22 +61,6 @@ Some useful commands to know from this prompt:
   \dt         -- list tables (useful later for ex02-04)
   \q          -- quit
 
-## pgAdmin (ex01)
-
-Open http://localhost:8080 in your browser.
-
-- Email: `admin@admin.com`
-- Password: `admin`
-
-To add the server in pgAdmin:
-1. Right-click **Servers** → **Register** → **Server**
-2. Name: `piscineds`
-3. Connection tab:
-   - Host: `postgresql` (the Docker service name, not localhost)
-   - Port: `5432`
-   - Database: `piscineds`
-   - Username: `amdemuyn`
-   - Password: `mysecretpassword`
 
 ---
 
@@ -135,3 +119,38 @@ scp -r "Data Science - 0" amdemuyn@<school-machine>:~/
 | pgAdmin password | `admin`     |
 | PostgreSQL port | `5432`        |
 | pgAdmin port    | `8080`        |
+
+
+## pgAdmin (ex01)
+
+Open http://localhost:8080 in your browser.
+
+- Email: `admin@admin.com`
+- Password: `admin`
+
+To add the server in pgAdmin:
+1. Right-click **Servers** → **Register** → **Server**
+2. Name: `piscineds`
+3. Connection tab:
+   - Host: `postgresql` (the Docker service name, not localhost)
+   - Port: `5432`
+   - Database: `piscineds`
+   - Username: `amdemuyn`
+   - Password: `mysecretpassword`
+
+
+## Create table from CSV (ex02)
+
+1. Run the script
+
+   - python3 ex02/table.py
+  We see: Table 'data_2022_oct' created successfully.
+  
+2. Connect to the DB and describe the table
+   - psql -U amdemuyn -d piscineds -h localhost -W
+   - Then inside psql: \d data_2022_oct
+  
+  We see the table structure with all 6 types.
+  
+  We can also show it in pgAdmin (ex01 tool) — navigate to piscineds > Schemas > public > Tables >
+  data_2022_oct and right-click → Properties. More visual.
