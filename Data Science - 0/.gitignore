@@ -4,4 +4,6 @@
 # Data files provided by 42 — too large for GitHub, not part of the submission
 subject/customer/*.csv
 subject/item/*.csv
+subject/*.zip
+*.zip
 subject/subject.zip
