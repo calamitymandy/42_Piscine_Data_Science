@@ -203,12 +203,15 @@ Shell PGPASSWORD=mysecretpassword psql -U amdemuyn -d piscineds -h localhost -c 
       COUNT(category_id)                AS rows_with_category_id,
       COUNT(brand)                      AS rows_with_brand,
       COUNT(*) - COUNT(category_id)     AS rows_without_match
-  FROM customers;
-  "
-    | total_rows | rows_with_category_id | rows_with_brand | rows_without_match 
-    -------------|-----------------------|-----------------|-------------------
-    |   19583741 |              19582393 |        11404851 |               1348
+  FROM customers;"
+
+
+    | total_rows | rows_with_category_id | rows_with_brand | rows_without_match |
+    |------------|-----------------------|-----------------|--------------------|
+    |   19583741 |              19582393 |        11404851 |               1348 |
     (1 row)
+
+
 
 • - 19,583,741 total rows — unchanged ✅
   - 19,582,393 rows matched a product in items and got category_id
