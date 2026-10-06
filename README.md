@@ -213,7 +213,7 @@ Shell PGPASSWORD=mysecretpassword psql -U amdemuyn -d piscineds -h localhost -c 
 
 
 
-• - 19,583,741 total rows — unchanged ✅
+  - 19,583,741 total rows — unchanged ✅
   - 19,582,393 rows matched a product in items and got category_id
   - 1,348 rows had a product_id not present in items at all — they got NULL for the item columns,
   which is correct for a LEFT JOIN
@@ -224,4 +224,4 @@ Shell PGPASSWORD=mysecretpassword psql -U amdemuyn -d piscineds -h localhost -c 
   in the items catalogue.
 
 
--> to show the columns: \d customers 
+`-> to show the columns: \d customers`
