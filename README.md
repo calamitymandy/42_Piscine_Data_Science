@@ -183,3 +183,42 @@ Connect to psql and run a few queries:
   
   -- see all tables
   \dt
+
+
+## ex03
+
+We build a new fused table then swap it in, which is much faster than adding columns and running an UPDATE on 19M rows. The duplicates have different category_id or brand — some rows have nulls, others have values. The right strategy is to keep the most informative row per product_id (prefer non-null values).
+
+The fusion.py script will:
+  1. Load item.csv into the items table
+  2. Add the 3 new columns (category_id, category_code, brand) to customers
+  3. Populate them via a LEFT JOIN with items on product_id
+
+customers now has 9 columns — the original 6 plus category_id, category_code, and brand from
+items. Row count unchanged at 19,583,741.
+
+Shell PGPASSWORD=mysecretpassword psql -U amdemuyn -d piscineds -h localhost -c "
+  SELECT
+      COUNT(*)                          AS total_rows,
+      COUNT(category_id)                AS rows_with_category_id,
+      COUNT(brand)                      AS rows_with_brand,
+      COUNT(*) - COUNT(category_id)     AS rows_without_match
+  FROM customers;
+  "
+     total_rows | rows_with_category_id | rows_with_brand | rows_without_match 
+    ------------+-----------------------+-----------------+--------------------
+       19583741 |              19582393 |        11404851 |               1348
+    (1 row)
+
+• - 19,583,741 total rows — unchanged ✅
+  - 19,582,393 rows matched a product in items and got category_id
+  - 1,348 rows had a product_id not present in items at all — they got NULL for the item columns,
+  which is correct for a LEFT JOIN
+  - 11,404,851 rows have a brand (the rest have null brand in items itself — that's the source
+  data being incomplete)
+  
+  No customer rows were lost. The 1,348 nulls are expected — those product IDs simply don't exist
+  in the items catalogue.
+
+
+-> to show the columns: \d customers 
