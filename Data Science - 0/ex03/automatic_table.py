@@ -13,7 +13,7 @@ DB_CONFIG = {
 
 # Path to the folder containing the customer CSV files.
 # Adjust this path if running from a different working directory.
-CUSTOMER_DIR = os.path.join(os.path.dirname(__file__), "../subject/customer")
+CUSTOMER_DIR = os.path.join(os.path.dirname(__file__), "../../subject/customer")
 
 # SQL template to create a customer table.
 # All customer CSVs share the same columns and types:

@@ -154,3 +154,32 @@ To add the server in pgAdmin:
   
   We can also show it in pgAdmin (ex01 tool) — navigate to piscineds > Schemas > public > Tables >
   data_2022_oct and right-click → Properties. More visual.
+
+
+
+----------------------------------------------------------
+
+
+# Piscine DataScience - 1 : Data Warehouse
+## ex02
+
+To show that there is no duplicates with psql:
+Connect to psql and run a few queries:
+  
+  psql -U amdemuyn -d piscineds -h localhost -W
+  
+  Then inside:
+  
+  -- row count
+  SELECT COUNT(*) FROM customers;
+  
+  -- check there are no exact duplicates left
+  SELECT COUNT(*) FROM customers
+  EXCEPT
+  SELECT COUNT(*) FROM (SELECT DISTINCT * FROM customers) AS d;
+  
+  -- peek at the data
+  SELECT * FROM customers LIMIT 5;
+  
+  -- see all tables
+  \dt
