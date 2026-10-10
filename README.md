@@ -225,3 +225,10 @@ Shell PGPASSWORD=mysecretpassword psql -U amdemuyn -d piscineds -h localhost -c 
 
 
 `-> to show the columns: \d customers`
+
+
+----------------------------------------------------------
+
+
+# Piscine DataScience - 2 : Data Warehouse
+## ex02
