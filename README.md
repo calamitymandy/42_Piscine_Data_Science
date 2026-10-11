@@ -233,3 +233,135 @@ Shell PGPASSWORD=mysecretpassword psql -U amdemuyn -d piscineds -h localhost -c 
 
 # Piscine DataScience - 2 : Data Warehouse
 ## ex02
+
+
+----------------------------------------------------------
+
+
+# Piscine DataScience - 3 : Data Viz
+
+The tool stack of my choice: Python with pandas + matplotlib/seaborn + scikit-learn — it covers everything from simple charts to clustering and runs identically on Mac and Linux:
+
+  - pandas — reads from PostgreSQL, handles all the data manipulation
+  - matplotlib/seaborn — pie charts, bar charts, box plots, all of ex00-03
+  - scikit-learn — elbow method and K-means for ex04-05
+  - Runs identically on Mac and school Linux
+  - No Jupyter needed — plain .py files are cleaner to submit and run during eval
+
+we use sqlalchemy to connect pandas directly to PostgreSQL with pd.read_sql(), 
+which is cleaner than psycopg2 for read-only queries.
+
+## ex00 pie.* — Pie chart of event types (view, cart, purchase…) from the customers table
+
+  a pie chart showing what people do on the site — that's the breakdown of event_type values (view, cart, purchase,
+  remove_from_cart) from the customers table.
+
+## ex01 chart.* — 3 charts of purchase data from Oct 2022 to Feb 2023
+  1. Line chart — Number of customers per day (Oct–Jan, without Feb in the example but we add it)
+  2. Bar chart — Total sales per month in millions of A$
+  3. Area chart — Average spend per customer per day (filled area, not just a line)
+
+## ex02 mustache.* — Statistical summary (mean, median, quartiles) + box plots of purchase prices
+  1. Horizontal box plot of all purchase prices — shows the full range including outliers/negatives (the squashed one going from -50
+  to 325)
+  2. Horizontal box plot of individual item prices — zoomed in, green, range 0-13 (this is the same data without extreme outliers,
+  or the IQR view)
+  3. Horizontal box plot of average basket per customer — blue, range 28-42
+  
+  Plus the stats printout from the subject:
+  
+  count  741644
+  mean   5.57
+  std    10.26
+  min   -79.37
+  25%    1.59
+  50%    3.33
+  75%    6.03
+  max  327.78
+
+  Three windows open one after the other, stats printed in the terminal. Close each window to proceed to the next.
+
+## ex03 Building.* — Bar charts: number of orders by frequency, and spend by customer
+  Two bar charts side by side:
+  
+  1. Left — number of customers by purchase frequency (how many times they bought), x-axis is frequency (0-35), y-axis is customers
+  2. Right — number of customers by monetary value spent (total spend in A$), x-axis is monetary value, y-axis is customers
+
+## ex04 elbow.* — Elbow method to find optimal number of clusters
+
+  Classic elbow curve. X-axis is number of clusters (1-10), Y-axis is inertia (sum of squared distances). The elbow appears around
+  k=3-4 in the subject example.
+  
+  The input to K-means needs to be per-customer features — the standard RFM approach: Recency (days since last purchase), Frequency
+  (number of purchases), Monetary (total spend).
+
+  If you want to group customers into "types" — like "loyal buyers", "occasional buyers", "window shoppers",
+  etc. But how many groups should you make?
+  
+  The elbow method answers that question.
+  
+  You try grouping customers into 1 group, then 2, then 3... up to 10. For each number of groups, you measure how "messy" the
+  grouping is — how different are the customers within the same group? That messiness score is called inertia. More groups = less
+  messy, but at some point adding another group barely helps.
+  
+  When you plot that score on a graph, it forms a curve that bends like an elbow. The point where the curve stops dropping sharply
+  is the sweet spot — the "elbow". That's your optimal number of groups. (In our case it's 4.)
+  
+  The three things we measure per customer (RFM):
+  - Recency — how long ago did they last buy? (recently = active customer)
+  - Frequency — how many times did they buy in total?
+  - Monetary — how much money did they spend in total?
+  
+  Those 3 numbers summarise each customer as a point in space. K-means then tries to find natural groupings of those points.
+
+## ex05 Clustering.* — K-means (or similar) clustering into 4+ customer groups with visualizations
+  Three visualizations expected:
+  
+  1. Horizontal bar chart — number of customers per cluster (Loyal, New, Inactive) with count labels
+  2. Bubble chart — clusters plotted by Median Recency (months) vs Median Frequency, bubble size = monetary value
+  3. Scatter plot — clusters in 2D space with centroids marked in yellow
+  
+  The subject example only has 3 groups but our elbow says 4 — we'll use k=4 and add a 4th group (we split "loyal customers" into "Big spenders" and "loyal customers").
+
+  Three windows one after the other. The terminal will also print the cluster medians so you can see exactly what profile each group has 
+
+  The medians are the raw cluster output before we assigned names. They tell the same story but without labels — They help us to
+  decide which name fits which cluster:
+  
+  ┌─────────┬──────────┬───────────────┬──────────┬─────────────────────────────────────────────────────────────┐
+  │ cluster │ recency  │ frequency     │ monetary │ → label                                                     │
+  ├─────────┼──────────┼───────────────┼──────────┼─────────────────────────────────────────────────────────────┤
+  │ 3       │ 15 days  │ 113 purchases │ 535 A$   │ Loyal customers — most recent, most frequent, highest spend │
+  ├─────────┼──────────┼───────────────┼──────────┼─────────────────────────────────────────────────────────────┤
+  │ 2       │ 32 days  │ 41 purchases  │ 187 A$   │ Big spenders — recent, moderate frequency, decent spend     │
+  ├─────────┼──────────┼───────────────┼──────────┼─────────────────────────────────────────────────────────────┤
+  │ 0       │ 31 days  │ 6 purchases   │ 31 A$    │ New customers — recent but barely bought anything yet       │
+  ├─────────┼──────────┼───────────────┼──────────┼─────────────────────────────────────────────────────────────┤
+  │ 1       │ 105 days │ 5 purchases   │ 28 A$    │ Inactive — haven't bought in 3+ months, low engagement      │
+  └─────────┴──────────┴───────────────┴──────────┴─────────────────────────────────────────────────────────────┘
+
+  Here's what the numbers tell you about your customers:
+  
+  Loyal customers (cluster 3)
+  - Last bought ~28 days ago → still active
+  - Bought 127 times on average → very frequent
+  - Spent ~623 A$ total → your best customers
+  - These are the ones you'd give gold/platinum status to
+  
+  Big spenders (cluster 2)
+  - Last bought ~43 days ago → fairly recent
+  - Bought 44 times → moderately frequent
+  - Spent ~207 A$ → spend a lot per visit but less often than loyal
+  - Good targets for upselling
+  
+  New customers (cluster 0)
+  - Last bought ~32 days ago → recent
+  - Only bought ~8 times → just getting started
+  - Spent ~40 A$ → small total because they're new
+  - Target them with welcome offers to convert them into loyal customers
+  
+  Inactive customers (cluster 1)
+  - Last bought ~108 days ago → haven't been back in 3+ months
+  - Only bought ~7 times → were never very engaged
+  - Spent ~37 A$ → low value
+  - Target them with "we miss you" coupons to bring them back
