@@ -370,3 +370,104 @@ which is cleaner than psycopg2 for read-only queries.
   - Only bought ~7 times → were never very engaged
   - Spent ~37 A$ → low value
   - Target them with "we miss you" coupons to bring them back
+
+# Piscine DataScience - 4: Data Scientist 1
+
+## ex00
+  - Test_knight.csv (no labels) → single green histogram per feature, legend says "Knight"
+  - Train_knight.csv (has Jedi/Sith labels) → overlapping histograms, blue = Jedi, pink = Sith
+  
+  6 rows × 5 columns = 30 subplots, one per feature.
+
+  Take Empowered. Every knight has a score for it. If you look at all the Jedi scores vs all the Sith scores:
+  
+  - Jedi tend to score high on Empowered (say around 0.2-0.3)
+  - Sith tend to score low on Empowered (say around 0.05-0.1)
+  
+  In the histogram:
+  - X axis = the Empowered score value (0.0, 0.1, 0.2...)
+  - Y axis = how many knights have that score (count)
+  - Blue bars = Jedi counts, pink bars = Sith counts
+  
+  Because the blue and pink bars are in different places on the X axis, you can clearly see the two groups are different → high
+  correlation.
+
+## ex01
+
+  a correlation factor between each feature and the knight target, sorted by strongest correlation.
+  The histograms show you visually — for each feature, do Jedi and Sith have different distributions? If the blue and pink peaks are far apart (like Empowered or Stims), those features separate the two groups well.
+  
+  Correlation gives you the same information as a number. A high correlation (like 0.79 for Empowered) means the Jedi and Sith
+  distributions for that feature are very different — exactly what you saw in the histogram where the peaks were clearly separated.
+  
+  A low correlation (like 0.007 for Deflection) means the histograms for Jedi and Sith overlap almost completely — you can't tell
+  them apart by that feature.
+  
+  What it doesn't tell you is which direction — who scores higher, Jedi or Sith. That's why we took abs(). If you removed the abs()
+  you'd see negative values too, which would mean "Sith score higher on this feature". But for this exercise the subject only asks
+  for strength of correlation, not direction.
+
+
+## ex02
+  python3 points.py Train_knight.csv
+  python3 points.py Test_knight.csv
+  
+  That gives you 4 plots total — 2 per file. The key thing to explain during eval: the separating plot uses Empowered vs Stims (high
+  correlation features), so you can visually see Jedi cluster separately from Sith. The mixing plot uses Pull vs Deflection
+  (near-zero correlation), so both groups overlap completely.
+
+## ex03
+
+  python3 standardization.py Train_knight.csv
+  python3 standardization.py Test_knight.csv
+
+  standardize the data, print it, and display one of the scatter plots from ex02 with the standardized data.
+  
+  ── What is standardization? ──────────────────────────────────────────────────
+The problem: features have very different scales.
+  - Stims goes from 50 to 250
+  - Deflection goes from 0.01 to 0.08
+
+  If you feed this raw data to a machine learning algorithm that measures
+  distances (like K-means or KNN), Stims will dominate just because its
+  numbers are bigger — even if Deflection is more informative.
+
+  Standardization fixes this by rescaling every feature so that:
+    - Its mean becomes 0  (the average value is now 0)
+    - Its std becomes 1   (values are measured in "how many std from average")
+
+  Formula for each value:  z = (x - mean) / std
+
+  After standardization, a Stims value of 100 becomes ~0, and 200 becomes ~1.
+  All features are now on the same scale and can be fairly compared.
+
+## ex04
+
+  python3 Normalization.py Train_knight.csv
+  python3 Normalization.py Test_knight.csv
+
+normalization — similar to ex03 but instead of centering around 0, it squashes every feature into the range 0 to 1.
+  
+  Formula: (x - min) / (max - min)
+  
+  The subject says to display the other graph from ex02 — so we use the mixing plot (Pull vs Deflection) this time, since ex03 used
+  the separating one.
+
+The mixing plot will still look like a mess of overlapping dots — just rescaled to 0-1. That's the point: normalization changes
+  the scale but can't create separation where there is none.
+
+## ex05
+
+python3 split.py Train_knight.csv
+
+Split Train_knight.csv into two files: Training_knight.csv and Validation_knight.csv. You need to justify the split
+  ratio.
+  
+  The standard split is 80% training / 20% validation. Why:
+  - 80% gives the model enough data to learn from
+  - 20% is enough to get a reliable estimate of how well it generalizes
+  - It's the industry standard for datasets this size (~400 rows)
+
+creates Training_knight.csv and Validation_knight.csv in the same folder, and prints the row counts so you can confirm the
+  split. The stratify parameter is a nice extra — it ensures both files keep the same Jedi/Sith proportion as the original, which
+  makes the validation set more representative.
