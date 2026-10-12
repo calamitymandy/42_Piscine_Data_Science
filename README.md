@@ -36,7 +36,7 @@ That's it. The script handles everything: checks Docker, creates `.env` if missi
 
 ```bash
 cd ex00
-docker compose --env-file ../.env up -d
+launch docker compose --env-file ../.env up -d
 ```
 cd "/goinfre/amdemuyn/42_Piscine_Data_Science/Data Science - 0" && docker compose --env-file
   .env -f ex00/docker-compose.yml up -d
