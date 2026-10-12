@@ -95,17 +95,9 @@ Just run:
 
 ### Transferring the project to school
 
-Option A — git (recommended):
-```bash
-git clone <your-repo-url>
-cd "Data Science - 0"
-./setup.sh
-```
-
-Option B — USB / scp:
-```bash
-scp -r "Data Science - 0" amdemuyn@<school-machine>:~/
-```
+  git clone <tu-repo>
+  cd "42_Piscine_Data_Science"
+  ./setup_env.sh
 
 ---
 
