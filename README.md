@@ -185,6 +185,19 @@ Connect to psql and run a few queries:
   -- see all tables
   \dt
 
+   1. Deduplication logic
+  
+  Old query used SELECT DISTINCT * — removes only rows that are 100% identical across all columns. If two rows differ by even 1 microsecond in event_time, they're kept as separate rows.
+  
+  New query uses a LAG window function — it looks at the time gap between consecutive events for the same (user, session, product, event_type, price) combination, and removes any event that happened within 1 second of the previous one. This catches near-duplicates where the timestamp is slightly different but it's clearly the same event sent twice.
+  
+  2. The customers table had 9 columns vs 6
+  
+  When we ran the old DISTINCT * on a table that already had category_id, category_code, brand added by ex03, two rows that were duplicates in the original 6 columns could have different item data — so DISTINCT * wouldn't recognize them as duplicates. The new script runs on the raw 6-column table (before fusion), so the deduplication is clean.
+  
+  In short: DISTINCT * only catches exact copies. The LAG approach catches "same event, slightly different
+  timestamp" which is where the bulk of the duplicates were hiding (~1.5M rows).
+
 
 ## ex03
 

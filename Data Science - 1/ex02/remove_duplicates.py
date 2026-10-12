@@ -42,27 +42,28 @@ def main():
         print("\n==> Building deduplicated copy...")
         cur.execute("""
             CREATE TABLE customers_clean AS
-            SELECT DISTINCT ON (
-                event_type,
-                product_id,
-                user_id,
-                user_session,
-                DATE_TRUNC('second', event_time)
-            )
-                event_time,
-                event_type,
-                product_id,
-                price,
-                user_id,
-                user_session
-            FROM customers
-            ORDER BY
-                event_type,
-                product_id,
-                user_id,
-                user_session,
-                DATE_TRUNC('second', event_time),
-                event_time;
+            SELECT event_time, event_type, product_id, price, user_id, user_session
+            FROM (
+                SELECT
+                    event_time,
+                    event_type,
+                    product_id,
+                    price,
+                    user_id,
+                    user_session,
+                    event_time - LAG(event_time) OVER (
+                        PARTITION BY
+                            event_type,
+                            product_id,
+                            price,
+                            user_id,
+                            user_session
+                        ORDER BY event_time
+                    ) AS time_gap
+                FROM customers
+            ) AS ordered
+            WHERE time_gap IS NULL
+               OR time_gap > INTERVAL '1 second';
         """)
 
         # ── Step 2: swap tables ───────────────────────────────────────────────
