@@ -250,7 +250,6 @@ The tool stack of my choice: Python with pandas + matplotlib/seaborn + scikit-le
   - pandas — reads from PostgreSQL, handles all the data manipulation
   - matplotlib/seaborn — pie charts, bar charts, box plots, all of ex00-03
   - scikit-learn — elbow method and K-means for ex04-05
-  - Runs identically on Mac and school Linux
   - No Jupyter needed — plain .py files are cleaner to submit and run during eval
 
 we use sqlalchemy to connect pandas directly to PostgreSQL with pd.read_sql(), 
@@ -258,8 +257,7 @@ which is cleaner than psycopg2 for read-only queries.
 
 ## ex00 pie.* — Pie chart of event types (view, cart, purchase…) from the customers table
 
-  a pie chart showing what people do on the site — that's the breakdown of event_type values (view, cart, purchase,
-  remove_from_cart) from the customers table.
+  a pie chart showing what people do on the site — that's the breakdown of event_type values (view, cart, purchase, remove_from_cart) from the customers table.
 
 ## ex01 chart.* — 3 charts of purchase data from Oct 2022 to Feb 2023
   1. Line chart — Number of customers per day (Oct–Jan, without Feb in the example but we add it)
