@@ -236,16 +236,13 @@ Shell PGPASSWORD=mysecretpassword psql -U amdemuyn -d piscineds -h localhost -c 
 ----------------------------------------------------------
 
 
-# Piscine DataScience - 2 : Data Warehouse
-## ex02
+# Piscine DataScience - 2 : Data Viz
 
+This module is about turning the data from the database into charts that tell a story.
+All charts connect to the `customers` table built in module 1.
 
-----------------------------------------------------------
-
-
-# Piscine DataScience - 3 : Data Viz
-
-The tool stack of my choice: Python with pandas + matplotlib/seaborn + scikit-learn — it covers everything from simple charts to clustering and runs identically on Mac and Linux:
+The tool stack: Python with pandas + matplotlib/seaborn + scikit-learn — 
+it covers everything from simple charts to clustering
 
   - pandas — reads from PostgreSQL, handles all the data manipulation
   - matplotlib/seaborn — pie charts, bar charts, box plots, all of ex00-03
@@ -255,40 +252,107 @@ The tool stack of my choice: Python with pandas + matplotlib/seaborn + scikit-le
 we use sqlalchemy to connect pandas directly to PostgreSQL with pd.read_sql(), 
 which is cleaner than psycopg2 for read-only queries.
 
-## ex00 pie.* — Pie chart of event types (view, cart, purchase…) from the customers table
+---
 
-  a pie chart showing what people do on the site — that's the breakdown of event_type values (view, cart, purchase, remove_from_cart) from the customers table.
+## ex00 — pie.*  Pie chart of what customers do on the site
 
-## ex01 chart.* — 3 charts of purchase data from Oct 2022 to Feb 2023
-  1. Line chart — Number of customers per day (Oct–Jan, without Feb in the example but we add it)
-  2. Bar chart — Total sales per month in millions of A$
-  3. Area chart — Average spend per customer per day (filled area, not just a line)
+The `customers` table records every action a customer made: viewing a product,
+adding it to the cart, removing it, or actually buying it.
 
-## ex02 mustache.* — Statistical summary (mean, median, quartiles) + box plots of purchase prices
-  1. Horizontal box plot of all purchase prices — shows the full range including outliers/negatives (the squashed one going from -50
-  to 325)
-  2. Horizontal box plot of individual item prices — zoomed in, green, range 0-13 (this is the same data without extreme outliers,
-  or the IQR view)
-  3. Horizontal box plot of average basket per customer — blue, range 28-42
-  
-  Plus the stats printout from the subject:
-  
-  count  741644
-  mean   5.57
-  std    10.26
-  min   -79.37
-  25%    1.59
-  50%    3.33
-  75%    6.03
-  max  327.78
+The pie chart answers the question: **out of all these actions, what percentage is each type?**
 
-  Three windows open one after the other, stats printed in the terminal. Close each window to proceed to the next.
+- Each slice = one type of action (view, cart, purchase, remove_from_cart)
+- The size of the slice = how common that action is
 
-## ex03 Building.* — Bar charts: number of orders by frequency, and spend by customer
-  Two bar charts side by side:
-  
-  1. Left — number of customers by purchase frequency (how many times they bought), x-axis is frequency (0-35), y-axis is customers
-  2. Right — number of customers by monetary value spent (total spend in A$), x-axis is monetary value, y-axis is customers
+You'll see that most events are views — people browse a lot but only a fraction
+actually buy. That's normal for e-commerce and already interesting to a business.
+
+Run:
+```bash
+python3 pie.py
+```
+
+---
+
+## ex01 — chart.*  3 charts of purchase activity over time
+
+We filter down to **purchases only** and look at how the business performed
+day by day and month by month between October 2022 and February 2023.
+
+**Chart 1 — Number of customers per day** (line chart)
+How many different people made a purchase each day?
+Spikes = sales events (Black Friday, Christmas...). Dips = quiet periods.
+
+**Chart 2 — Total sales per month** (bar chart)
+How much money (in Altairian Dollars) did the shop make each month?
+Each bar = one month. Taller bar = more revenue.
+
+**Chart 3 — Average spend per customer per day** (area chart)
+On a given day, how much did the average buying customer spend?
+This is different from total sales — it shows whether customers are spending
+more or less per visit, regardless of how many came.
+
+Run:
+```bash
+python3 chart.py
+```
+
+---
+
+## ex02 — mustache.*  Box plots of purchase prices
+
+A box plot is a compact summary of how a set of numbers is spread out.
+Instead of showing every value, it shows 5 key points:
+- The minimum (ignoring extreme outliers)
+- The 25th percentile (25% of values are below this)
+- The median (the middle value — 50% below, 50% above)
+- The 75th percentile (75% of values are below this)
+- The maximum (ignoring extreme outliers)
+
+The "box" covers the middle 50% of the data. The lines sticking out are called
+whiskers. Dots beyond the whiskers are outliers — unusually extreme values.
+
+**Plot 1 — All purchase prices**
+Shows the full range of prices, from -79 A$ (returns/refunds) to 327 A$.
+The box is squashed near zero because most items are cheap — the extreme
+values stretch the axis but aren't representative.
+
+**Plot 2 — Item prices (zoomed in)**
+Same data but zoomed into the typical range (0–13 A$).
+This gives a clearer picture of what most items actually cost.
+
+**Plot 3 — Average basket per customer per day**
+Instead of individual item prices, this shows how much the average customer
+spent in total on a given day. The range is much tighter (around 30–42 A$)
+because averaging smooths out the extremes.
+
+The script also prints the stats (count, mean, min, max, quartiles) in the terminal.
+
+Run:
+```bash
+python3 mustache.py
+```
+
+---
+
+## ex03 — Building.*  Bar charts of purchase habits
+
+Two bar charts side by side that answer two different questions about customers:
+
+**Left chart — How often do customers buy? (frequency)**
+Each bar = a group of customers who bought a certain number of times.
+The first bar is the tallest — most customers only bought a handful of times.
+Very few customers bought 30+ times. This is a classic "long tail" pattern.
+
+**Right chart — How much do customers spend in total? (monetary value)**
+Each bar = a group of customers who spent a certain total amount.
+Again, most customers spent a small amount, and only a few are big spenders.
+
+Together these two charts set up the customer segmentation work in ex04-ex05:
+they show that customers are not all the same — there are clear differences
+in how often and how much people buy.
+
+---
 
 ## ex04 elbow.* — Elbow method to find optimal number of clusters
 
@@ -326,10 +390,9 @@ which is cleaner than psycopg2 for read-only queries.
   
   The subject example only has 3 groups but our elbow says 4 — we'll use k=4 and add a 4th group (we split "loyal customers" into "Big spenders" and "loyal customers").
 
-  Three windows one after the other. The terminal will also print the cluster medians so you can see exactly what profile each group has 
+  Three windows one after the other. The terminal will also print the cluster medians so you can see exactly what profile each group has.
 
-  The medians are the raw cluster output before we assigned names. They tell the same story but without labels — They help us to
-  decide which name fits which cluster:
+  The medians are the raw cluster output before we assigned names. They tell the same story but without labels — They help us to decide which name fits which cluster:
   
   ┌─────────┬──────────┬───────────────┬──────────┬─────────────────────────────────────────────────────────────┐
   │ cluster │ recency  │ frequency     │ monetary │ → label                                                     │
@@ -368,6 +431,10 @@ which is cleaner than psycopg2 for read-only queries.
   - Only bought ~7 times → were never very engaged
   - Spent ~37 A$ → low value
   - Target them with "we miss you" coupons to bring them back
+
+
+----------------------------------------------------------
+
 
 # Piscine DataScience - 4: Data Scientist 1
 
@@ -469,6 +536,10 @@ Split Train_knight.csv into two files: Training_knight.csv and Validation_knight
 creates Training_knight.csv and Validation_knight.csv in the same folder, and prints the row counts so you can confirm the
   split. The stratify parameter is a nice extra — it ensures both files keep the same Jedi/Sith proportion as the original, which
   makes the validation set more representative.
+
+
+----------------------------------------------------------
+
 
 # Piscine DataScience - 5: Data Scientist 2
 

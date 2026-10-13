@@ -47,13 +47,15 @@ X = scaler.fit_transform(features)
 # ── Elbow method: compute inertia for k = 1 to 10 ────────────────────────────
 # Inertia = sum of squared distances from each customer to their group centre.
 # The "elbow" is where the curve stops dropping sharply — that's the best k.
+# KMeans() is scikit-learn estimator that groups data into a specified number of 
+# clusters by assigning each sample to its nearest cluster center. 
 inertias = []
 k_range = range(1, 11)
 
 print("Computing inertia for k = 1 to 10...")
 for k in k_range:
     km = KMeans(n_clusters=k, random_state=42, n_init=10)
-    km.fit(X)
+    km.fit(X) # Call to know the cluster center
     inertias.append(km.inertia_)
     print(f"  k={k}: inertia={km.inertia_:,.0f}")
 
