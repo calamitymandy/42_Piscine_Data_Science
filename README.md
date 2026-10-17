@@ -436,7 +436,7 @@ in how often and how much people buy.
 ----------------------------------------------------------
 
 
-# Piscine DataScience - 4: Data Scientist 1
+# Piscine DataScience - 3: Data Scientist 1
 
 ## ex00
   - Test_knight.csv (no labels) → single green histogram per feature, legend says "Knight"
@@ -541,7 +541,7 @@ creates Training_knight.csv and Validation_knight.csv in the same folder, and pr
 ----------------------------------------------------------
 
 
-# Piscine DataScience - 5: Data Scientist 2
+# Piscine DataScience - 4: Data Scientist 2
 
 ## ex00
   
